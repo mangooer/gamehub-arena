@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package common;
+option go_package = "github.com/mangooer/gamehub-arena/api/gen/go/common";
+
+import "google/protobuf/timestamp.proto";
+
+// 基础响应结构
+message BaseResponse {
+    int32 code = 1;
+    string message = 2;
+    google.protobuf.Timestamp timestamp = 3;
+}
+
+// 分页请求
+message PageRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+//分页响应
+message PageResponse {
+    int32 page = 1;
+    int32 page_size = 2;
+    int64 total = 3;
+}
+
+//用户基础信息
+message UserInfo {
+    string user_id = 1;
+    string username = 2;
+    int32 level = 3;
+    double win_rate = 4;
+}
+

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package health.v1;
+option go_package = "github.com/mangooer/gamehub-arena/api/gen/go/health/v1";
+
+// 健康检查服务
+
+service HealthService {
+    // 检查服务健康状态
+    rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+    // 监控服务状态变化
+    rpc Watch(HealthCheckRequest) returns (stream HealthCheckResponse);
+}
+
+message HealthCheckRequest {
+    string service = 1;
+}
+
+message HealthCheckResponse {
+    enum ServingStatus {
+        UNKNOWN = 0;
+        SERVING = 1;
+        NOT_SERVING = 2;
+        SERVICE_UNKNOWN =3;
+    }
+    ServingStatus status = 1;
+}
