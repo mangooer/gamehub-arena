@@ -4,10 +4,14 @@ server:
   
 database:
   host: "localhost"
-  port: 3306
+  port: 5432
   name: "gamehub_arena"
-  user: "root"
+  user: "postgres"
   password: "123456"
+  ssl_mode: "disable"
+  max_open_conns: 100
+  max_idle_conns: 10
+  max_lifetime: 1  # 小时
   
 redis:
   host: "localhost"
