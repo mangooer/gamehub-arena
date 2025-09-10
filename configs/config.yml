@@ -22,6 +22,12 @@ redis:
 logging:
   level: "info"
   format: "json"
+  output: "console"
+  file_path: "./logs/app.log"
+  max_size: 100
+  max_backups: 3
+  max_age: 28
+  compress: true
 
 auth:
   jwt:
@@ -41,3 +47,21 @@ auth:
     max_sessions: 5
     inactive_timeout: 30
     remember_me_days: 30
+
+monitoring:
+  metrics:
+    enabled: true
+    port: 9090
+    path: /metrics
+    namespace: gamehub
+    subsystem: arena
+  tracing:
+    enabled: false
+    service_name: gamehub-arena
+  health:
+    enabled: true
+    port: 8080
+    path: /health
+    check_interval: 30
+
+

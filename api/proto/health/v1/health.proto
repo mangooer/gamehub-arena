@@ -16,6 +16,12 @@ message HealthCheckRequest {
     string service = 1;
 }
 
+
+message DetailedHealthCheckRequest {
+    string service = 1;
+    bool include_dependencies = 2;
+}
+
 message HealthCheckResponse {
     enum ServingStatus {
         UNKNOWN = 0;
@@ -24,4 +30,7 @@ message HealthCheckResponse {
         SERVICE_UNKNOWN =3;
     }
     ServingStatus status = 1;
+    string message = 2;
+    map<string, string> services = 3;
+    int64 uptime_seconds = 4;
 }

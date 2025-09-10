@@ -5,10 +5,12 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig   `mapstructure:"server"`
-	Database DatabaseConfig `mapstructure:"database"`
-	Redis    RedisConfig    `mapstructure:"redis"`
-	Logging  LoggingConfig  `mapstructure:"logging"`
+	Server     ServerConfig     `mapstructure:"server"`
+	Database   DatabaseConfig   `mapstructure:"database"`
+	Redis      RedisConfig      `mapstructure:"redis"`
+	Logging    LoggingConfig    `mapstructure:"logging"`
+	Auth       AuthConfig       `mapstructure:"auth"`
+	Monitoring MonitoringConfig `mapstructure:"monitoring"`
 }
 
 type ServerConfig struct {
@@ -36,8 +38,14 @@ type RedisConfig struct {
 }
 
 type LoggingConfig struct {
-	Level  string `mapstructure:"level"`
-	Format string `mapstructure:"format"`
+	Level      string `mapstructure:"level"`
+	Format     string `mapstructure:"format"`
+	Output     string `mapstructure:"output"`      // 输出方式：console, file, both
+	FilePath   string `mapstructure:"file_path"`   // 日志文件路径
+	MaxSize    int    `mapstructure:"max_size"`    // 日志文件最大大小(MB)
+	MaxBackups int    `mapstructure:"max_backups"` // 保留的日志文件数量
+	MaxAge     int    `mapstructure:"max_age"`     // 日志文件保留天数
+	Compress   bool   `mapstructure:"compress"`    // 是否压缩旧日志文件
 }
 
 type AuthConfig struct {
@@ -69,6 +77,35 @@ type SessionConfig struct {
 	RememberMeDays  int `mapstructure:"remember_me_days"` // 记住我天数
 }
 
+// 监控配置
+type MonitoringConfig struct {
+	Metrics MetricsConfig `mapstructure:"metrics"`
+	Tracing TracingConfig `mapstructure:"tracing"`
+	Health  HealthConfig  `mapstructure:"health"`
+}
+
+type MetricsConfig struct {
+	Enabled   bool   `mapstructure:"enabled"`
+	Port      int    `mapstructure:"port"`
+	Path      string `mapstructure:"path"`
+	Namespace string `mapstructure:"namespace"`
+	Subsystem string `mapstructure:"subsystem"`
+}
+
+type TracingConfig struct {
+	Enabled     bool    `mapstructure:"enabled"`
+	ServiceName string  `mapstructure:"service_name"`
+	Endpoint    string  `mapstructure:"endpoint"`
+	SampleRate  float64 `mapstructure:"sample_rate"`
+}
+
+type HealthConfig struct {
+	Enabled       bool   `mapstructure:"enabled"`
+	Port          int    `mapstructure:"port"`
+	Path          string `mapstructure:"path"`
+	CheckInterval int    `mapstructure:"check_interval"` // 健康检查间隔(秒)
+}
+
 func Load() (*Config, error) {
 
 	// 设置默认值
@@ -93,6 +130,33 @@ func Load() (*Config, error) {
 	viper.SetDefault("auth.session.max_sessions", 5)
 	viper.SetDefault("auth.session.inactive_timeout", 30) // 30分钟
 	viper.SetDefault("auth.session.remember_me_days", 30)
+
+	// 日志相关默认值
+	viper.SetDefault("logging.level", "info")
+	viper.SetDefault("logging.format", "json")
+	viper.SetDefault("logging.output", "console")
+	viper.SetDefault("logging.file_path", "./logs/app.log")
+	viper.SetDefault("logging.max_size", 100) // 100MB
+	viper.SetDefault("logging.max_backups", 3)
+	viper.SetDefault("logging.max_age", 28) // 28天
+	viper.SetDefault("logging.compress", true)
+
+	// 监控相关默认值
+	viper.SetDefault("monitoring.metrics.enabled", true)
+	viper.SetDefault("monitoring.metrics.port", 9090)
+	viper.SetDefault("monitoring.metrics.path", "/metrics")
+	viper.SetDefault("monitoring.metrics.namespace", "gamehub")
+	viper.SetDefault("monitoring.metrics.subsystem", "arena")
+
+	viper.SetDefault("monitoring.tracing.enabled", false)
+	viper.SetDefault("monitoring.tracing.service_name", "gamehub-arena")
+	viper.SetDefault("monitoring.tracing.endpoint", "http://localhost:14268/api/traces")
+	viper.SetDefault("monitoring.tracing.sample_rate", 0.1)
+
+	viper.SetDefault("monitoring.health.enabled", true)
+	viper.SetDefault("monitoring.health.port", 8080)
+	viper.SetDefault("monitoring.health.path", "/health")
+	viper.SetDefault("monitoring.health.check_interval", 30)
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
