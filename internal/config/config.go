@@ -40,6 +40,35 @@ type LoggingConfig struct {
 	Format string `mapstructure:"format"`
 }
 
+type AuthConfig struct {
+	Jwt      JwtConfig      `mapstructure:"jwt"`
+	Password PasswordConfig `mapstructure:"password"`
+	Session  SessionConfig  `mapstructure:"session"`
+}
+
+type JwtConfig struct {
+	SecretKey       string `mapstructure:"secret_key"`
+	AccessTokenTTL  int    `mapstructure:"access_token_ttl"`
+	RefreshTokenTTL int    `mapstructure:"refresh_token_ttl"`
+	Issuer          string `mapstructure:"issuer"`
+	Audience        string `mapstructure:"audience"`
+}
+
+type PasswordConfig struct {
+	MinLength     int  `mapstructure:"min_length"`
+	RequireUpper  bool `mapstructure:"require_upper"`
+	RequireLower  bool `mapstructure:"require_lower"`
+	RequireDigit  bool `mapstructure:"require_digit"`
+	RequireSymbol bool `mapstructure:"require_symbol"`
+	BcryptCost    int  `mapstructure:"bcrypt_cost"`
+}
+
+type SessionConfig struct {
+	MaxSessions     int `mapstructure:"max_sessions"`     // 每用户最大会话数
+	InactiveTimeout int `mapstructure:"inactive_timeout"` // 非活跃超时（分钟）
+	RememberMeDays  int `mapstructure:"remember_me_days"` // 记住我天数
+}
+
 func Load() (*Config, error) {
 
 	// 设置默认值
@@ -47,6 +76,23 @@ func Load() (*Config, error) {
 	viper.SetDefault("database.max_open_conns", 100)
 	viper.SetDefault("database.max_idle_conns", 10)
 	viper.SetDefault("database.max_lifetime", 10)
+
+	// 认证相关默认值
+	viper.SetDefault("auth.jwt.access_token_ttl", 15)   // 15分钟
+	viper.SetDefault("auth.jwt.refresh_token_ttl", 168) // 7天（小时）
+	viper.SetDefault("auth.jwt.issuer", "gamehub-arena")
+	viper.SetDefault("auth.jwt.audience", "gamehub-users")
+
+	viper.SetDefault("auth.password.min_length", 8)
+	viper.SetDefault("auth.password.require_upper", true)
+	viper.SetDefault("auth.password.require_lower", true)
+	viper.SetDefault("auth.password.require_digit", true)
+	viper.SetDefault("auth.password.require_symbol", false)
+	viper.SetDefault("auth.password.bcrypt_cost", 12)
+
+	viper.SetDefault("auth.session.max_sessions", 5)
+	viper.SetDefault("auth.session.inactive_timeout", 30) // 30分钟
+	viper.SetDefault("auth.session.remember_me_days", 30)
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

@@ -22,3 +22,22 @@ redis:
 logging:
   level: "info"
   format: "json"
+
+auth:
+  jwt:
+    secret_key: "ctAf9pUx41LkDOJKAG4uz8OhLAAQTOwK"
+    access_token_ttl: 15
+    refresh_token_ttl: 168
+    issuer: "gamehub-arena"
+    audience: "gamehub-users"
+  password:
+    min_length: 8
+    require_upper: true
+    require_lower: true
+    require_digit: true
+    require_symbol: false
+    bcrypt_cost: 12
+  session:
+    max_sessions: 5
+    inactive_timeout: 30
+    remember_me_days: 30
