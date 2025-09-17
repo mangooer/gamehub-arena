@@ -11,6 +11,7 @@ type Config struct {
 	Logging    LoggingConfig    `mapstructure:"logging"`
 	Auth       AuthConfig       `mapstructure:"auth"`
 	Monitoring MonitoringConfig `mapstructure:"monitoring"`
+	Match      MatchConfig      `mapstructure:"match"`
 }
 
 type ServerConfig struct {
@@ -104,6 +105,31 @@ type HealthConfig struct {
 	Port          int    `mapstructure:"port"`
 	Path          string `mapstructure:"path"`
 	CheckInterval int    `mapstructure:"check_interval"` // 健康检查间隔(秒)
+}
+
+type MatchConfig struct {
+	DefaultAlgorithm string                     `mapstructure:"default_algorithm"`
+	Algorithms       map[string]AlgorithmConfig `mapstructure:"algorithms"`
+}
+
+type AlgorithmConfig struct {
+	Name        string                 `mapstructure:"name"`
+	Description string                 `mapstructure:"description"`
+	Version     string                 `mapstructure:"version"`
+	Enabled     bool                   `mapstructure:"enabled"`
+	Weights     map[string]float64     `mapstructure:"weights"`    // 各因子权重
+	Thresholds  map[string]float64     `mapstructure:"thresholds"` //阈值配置
+	Parameters  map[string]interface{} `mapstructure:"parameters"` //算法特定参数配置
+
+	//匹配限制
+	MaxLevelDiff   int     `mapstructure:"max_level_diff"`    //最大等级差
+	MaxWinRateDiff float64 `mapstructure:"max_win_rate_diff"` //最大胜率差
+	MaxPingDiff    int     `mapstructure:"max_ping_diff"`     //最大延迟差
+	MaxQueueTime   int     `mapstructure:"max_queue_time"`    //最大排队时间 秒
+
+	//动态调整
+	EnableDynamicAdjustment bool    `mapstructure:"enable_dynamic_adjustment"` //是否启用动态调整
+	QueueTimeMultiplier     float64 `mapstructure:"queue_time_multiplier"`     //排队时间倍率
 }
 
 func Load() (*Config, error) {

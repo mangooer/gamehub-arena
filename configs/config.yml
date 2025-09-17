@@ -64,4 +64,78 @@ monitoring:
     path: /health
     check_interval: 30
 
-
+match:
+  default_algorithm: "elo"  # 默认使用的算法
+  algorithms:
+    elo:
+      name: "ELO Rating"
+      description: "Traditional ELO rating algorithm"
+      version: "1.0.0"
+      enabled: true
+      weights:
+        level: 0.3
+        winrate: 0.3
+        ping: 0.2
+        mmr: 0.2
+      thresholds:
+        min_score: 0.6
+        max_score: 1.0
+      parameters:
+        k_factor: 32
+        initial_rating: 1200
+      max_level_diff: 5
+      max_win_rate_diff: 0.3
+      max_ping_diff: 100
+      max_queue_time: 300
+      enable_dynamic_adjustment: true
+      queue_time_multiplier: 1.2
+      
+    glicko:
+      name: "Glicko-2"
+      description: "Glicko-2 rating algorithm with rating deviation"
+      version: "2.0.0"
+      enabled: false  # 暂时禁用
+      weights:
+        level: 0.25
+        winrate: 0.35
+        ping: 0.15
+        mmr: 0.25
+      thresholds:
+        min_score: 0.5
+        max_score: 1.0
+      parameters:
+        initial_rating: 1500
+        initial_rd: 350
+        volatility: 0.06
+        tau: 0.5
+      max_level_diff: 8
+      max_win_rate_diff: 0.4
+      max_ping_diff: 150
+      max_queue_time: 450
+      enable_dynamic_adjustment: true
+      queue_time_multiplier: 1.1
+      
+    trueskill:
+      name: "TrueSkill"
+      description: "Microsoft TrueSkill algorithm for team games"
+      version: "1.0.0"
+      enabled: false
+      weights:
+        level: 0.2
+        winrate: 0.4
+        ping: 0.1
+        mmr: 0.3
+      thresholds:
+        min_score: 0.4
+        max_score: 1.0
+      parameters:
+        mu: 25.0
+        sigma: 8.333
+        beta: 4.166
+        tau: 0.083
+      max_level_diff: 10
+      max_win_rate_diff: 0.5
+      max_ping_diff: 200
+      max_queue_time: 600
+      enable_dynamic_adjustment: false
+      queue_time_multiplier: 1.0

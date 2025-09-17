@@ -86,3 +86,7 @@ func (l *Logger) Named(name string) *Logger {
 func (l *Logger) Close() error {
 	return l.logger.Sync()
 }
+
+func (l *Logger) GetLogger() *zap.Logger {
+	return l.logger
+}
